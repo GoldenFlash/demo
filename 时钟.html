@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>时钟</title>
+    <style type="text/css">
+        .box{
+            width:500px;
+            height: 500px;
+            margin: 0 auto;
+        }
+        #clock{
+
+
+        }
+    </style>
+</head>
+<body>
+<div class="box">
+<canvas id="clock" width="500px" height="500px" ></canvas>
+</div>
+</body>
+<script type="text/javascript">
+    var page = document.getElementById("clock");
+    var ctx = page.getContext("2d");
+    var width = ctx.canvas.width;
+    var height = ctx.canvas.height;
+    var r = width/2;
+    var rem = width/200
+    function drawBackground() {
+        ctx.save();
+        ctx.translate(r,r);
+        ctx.lineWidth = 20*rem;
+        ctx.beginPath();
+        ctx.arc(0,0,r-10*rem,0,2*Math.PI ,false);
+        ctx.stroke();
+        var hours =[3,4,5,6,7,8,9,10,11,12,1,2];
+        for(i=0;i<12;i++){
+            var x = Math.cos(i*Math.PI/6)*(r-35*rem);
+            var y = Math.sin(i*Math.PI/6)*(r-35*rem);
+            ctx.font=18*rem+'px Arial';
+            ctx.textAlign="center"
+            ctx.textBaseline="middle"
+            ctx.fillText(hours[i],x ,y);
+
+        }
+        for(i=0;i<60;i++){
+            var x = (r-23*rem)*Math.cos(Math.PI/30*i);
+            var y = (r-23*rem)*Math.sin(Math.PI/30*i);
+            ctx.lineWidth = 3*rem;
+            ctx.beginPath();
+            if (i%5===0){
+                ctx.fillStyle='black';
+                ctx.arc(x,y,3*rem,0,2*Math.PI,false);
+            }
+            else{
+                ctx.fillStyle='#606060';
+                ctx.arc(x,y,2*rem,0,2*Math.PI,false);
+            }
+            ctx.fill();
+        }
+    }
+    function drawHours(hours,minute) {
+        ctx.save();
+        var radH =Math.PI/6*hours;
+        var radM =Math.PI/360*minute;
+        ctx.rotate(radH+radM);
+        ctx.lineCap="round";
+        ctx.beginPath();
+        ctx.moveTo(0,5*rem);
+        ctx.lineTo(0,-r+70*rem);
+        ctx.stroke();
+        ctx.restore();
+    }
+    function drawMinute(minute,second) {
+        ctx.save();
+        var radM =2*Math.PI/60*minute;
+        var radS =2*Math.PI/3600*second;
+        ctx.rotate(radM+radS);
+        ctx.lineCap="round";
+        ctx.beginPath();
+        ctx.moveTo(0,10*rem);
+        ctx.lineTo(0,-r+60*rem);
+        ctx.stroke();
+        ctx.restore();
+    }
+    function drawSecond(second) {
+        ctx.save();
+        var rad =2*Math.PI/60*second;
+        ctx.rotate(rad);
+        ctx.beginPath();
+        ctx.fillStyle="red"
+        ctx.moveTo(-3*rem,10*rem);
+        ctx.lineTo(0,-r+40*rem);
+        ctx.lineTo(3*rem,20*rem);
+        ctx.fill();
+        ctx.restore();
+    }
+    function drawdot(){
+        ctx.lineWidth='3*rem'
+        ctx.beginPath();
+        ctx.fillStyle="white";
+        ctx.arc(0,0,5*rem,0,2*Math.PI,true)
+        ctx.fill()
+    }
+    function move(){
+        ctx.clearRect(0,0,width,height);
+        drawBackground();
+        var now = new Date();
+        var second = now.getSeconds();
+        var minute = now.getMinutes();
+        var hours = now.getHours();
+        drawSecond(second);
+        drawMinute(minute,second);
+        drawHours(hours,minute);
+        drawdot();
+        ctx.restore();
+    }
+    move()
+    setInterval(move,1000)
+
+</script>
+</html>
